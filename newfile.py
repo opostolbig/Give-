@@ -10,11 +10,11 @@ from aiocryptopay import AioCryptoPay, Networks
 import asyncio
 
 # Инициализация бота
-API_TOKEN = '7788959684:AAFM4UkDux1O-7eaNnmS8BkQiyMBkdnKC7c'
+API_TOKEN = '7795536845:AAGvBiDeTm2UHNpe-SI_QXz0NrdXBb2QB5o'
 bot = telebot.TeleBot(API_TOKEN)
 
 # Токен CryptoPay
-CRYPTO_PAY_TOKEN = '323311:AAStVFaf1thMZHBLnb8nOFER5PWmXnytmor'
+CRYPTO_PAY_TOKEN = '7788959684:AAFM4UkDux1O-7eaNnmS8BkQiyMBkdnKC7c'
 crypto = AioCryptoPay(token=CRYPTO_PAY_TOKEN, network=Networks.MAIN_NET)
 
 # Создаем новый event loop
@@ -140,15 +140,15 @@ def main_menu(message):
         )
         markup.add(support_button)
     
-    # Кнопка "Купить White List" теперь доступна всем пользователям
-    white_list_button = types.InlineKeyboardButton(
-        text='💎 Купить White List', callback_data='buy_white_list'
-    )
-    markup.add(white_list_button)
+    if not user_database.get(user_id, {}).get('white_list', False):
+        white_list_button = types.InlineKeyboardButton(
+            text='💎 Купить White List', callback_data='buy_white_list'
+        )
+        markup.add(white_list_button)
 
     bot.send_message(
         message.chat.id,
-        '<b>🔧 Главное меню:</b>\n\n<blockquote> - Нажмите "Найти пользователя", чтобы получить информацию о местоположении пользователя по ID.\n - Нажмите "Поддержка", если вам нужна помощь.\n - Нажмите "Купить White List" для защиты вашей геопозиции.</blockquote>',
+        '<b>🔧 Главное меню:</b>\n<blockquote> - Нажмите "Найти пользователя", чтобы получить информацию о местоположении пользователя по ID.\n - Нажмите "Поддержка", если вам нужна помощь.\n - Нажмите "Купить White List" для защиты вашей геопозиции.</blockquote>',
         reply_markup=markup,
         parse_mode='HTML'
     )
@@ -534,7 +534,7 @@ def check_payment(call):
             bot.edit_message_text(
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
-                text="❗ Оплата не оплата не обнаружена. Пожалуйста, выберите действие:",
+                text="❗ Оплата не обнаружена. Пожалуйста, выберите действие:",
                 reply_markup=markup
             )
         elif invoice.status == 'paid':
